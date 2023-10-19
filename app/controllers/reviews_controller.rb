@@ -13,7 +13,7 @@ class ReviewsController < ApplicationController
   # GET /reviews/new
   def new
     @restaurant = Restaurant.find(params[:restaurant_id])
-    @review = Review.new
+    @review = @restaurant.reviews.build
   end
 
   # GET /reviews/1/edit
@@ -22,10 +22,12 @@ class ReviewsController < ApplicationController
 
   # POST /reviews or /reviews.json
   def create
-    @review = Review.new(review_params)
-    @review.restaurant = @restaurant
+    @@review = Review.new(review_params)
+    @restaurant = Restaurant.find(params[:restaurant_id])
+
+    @review.restaurant_id = @restaurant.id
     @review.save
-    redirect_to restaurant_path(@restaurant)
+
 
     respond_to do |format|
       if @review.save
@@ -69,6 +71,6 @@ class ReviewsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def review_params
-      params.require(:review).permit(:content, :restaurant_id)
+      params.require(:review).permit(:rating, :restaurant_id)
     end
 end
