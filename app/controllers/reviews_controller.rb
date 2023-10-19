@@ -22,17 +22,15 @@ class ReviewsController < ApplicationController
 
   # POST /reviews or /reviews.json
   def create
-    @@review = Review.new(review_params)
+    @review = Review.new(review_params)
     @restaurant = Restaurant.find(params[:restaurant_id])
-
-    @review.restaurant_id = @restaurant.id
-    @review.save
+    @review.restaurant = @restaurant
 
 
     respond_to do |format|
       if @review.save
-        format.html { redirect_to review_url(@review), notice: "Review was successfully created." }
-        format.json { render :show, status: :created, location: @review }
+        format.html { redirect_to restaurant_path(@restaurant), notice: "Review was successfully created." }
+        format.json { render :show, status: :created, location: @restaurant }
       else
         format.html { render :new, status: :unprocessable_entity }
         format.json { render json: @review.errors, status: :unprocessable_entity }
@@ -44,7 +42,7 @@ class ReviewsController < ApplicationController
   def update
     respond_to do |format|
       if @review.update(review_params)
-        format.html { redirect_to review_url(@review), notice: "Review was successfully updated." }
+        format.html { redirect_to restaurant_path(@review.restaurant), notice: "Review was successfully updated." }
         format.json { render :show, status: :ok, location: @review }
       else
         format.html { render :edit, status: :unprocessable_entity }
@@ -71,6 +69,6 @@ class ReviewsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def review_params
-      params.require(:review).permit(:rating, :restaurant_id)
+      params.require(:review).permit(:rating, :content, :restaurant_id)
     end
 end
